@@ -1,0 +1,66 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: face-attendance-db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: face_attendance_db
+      MYSQL_USER: attendance_user
+      MYSQL_PASSWORD: attendance_pass
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ../database/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - attendance-network
+
+  backend:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: face-attendance-backend
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    environment:
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_NAME: face_attendance_db
+      DB_USER: root
+      DB_PASSWORD: root
+      NODE_ENV: development
+      CORS_ORIGIN: http://localhost:5173
+      JWT_SECRET: face_attendance_jwt_secret_key_2024_docker
+    depends_on:
+      - mysql
+    volumes:
+      - ../backend/uploads:/app/uploads
+      - ../backend/models:/app/models
+    networks:
+      - attendance-network
+
+  frontend:
+    image: node:18-alpine
+    container_name: face-attendance-frontend
+    restart: unless-stopped
+    working_dir: /app
+    volumes:
+      - ../frontend:/app
+    ports:
+      - "5173:5173"
+    command: sh -c "npm install && npm run dev -- --host 0.0.0.0"
+    depends_on:
+      - backend
+    networks:
+      - attendance-network
+
+volumes:
+  mysql_data:
+
+networks:
+  attendance-network:
+    driver: bridge
