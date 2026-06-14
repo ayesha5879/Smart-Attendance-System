@@ -18,11 +18,14 @@ WORKDIR /app
 # Copy package files
 COPY backend/package*.json ./
 
-# Install dependencies
+# Install dependencies and build
 RUN npm install
 
 # Copy backend source
 COPY backend/ .
+
+# Compile TypeScript to dist/
+RUN npm run build
 
 # Create required directories
 RUN mkdir -p uploads models
@@ -31,4 +34,4 @@ RUN mkdir -p uploads models
 EXPOSE 5000
 
 # Start server
-CMD ["node", "src/server.js"]
+CMD ["node", "dist/index.js"]
