@@ -9,6 +9,7 @@ RUN apk add --no-cache \
     pango-dev \
     giflib-dev \
     python3 \
+    py3-setuptools \
     make \
     gcc
 
