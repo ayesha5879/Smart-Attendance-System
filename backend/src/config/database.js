@@ -2,13 +2,13 @@ const { Sequelize } = require('sequelize');
 require('dotenv').config();
 
 const sequelize = new Sequelize(
-  process.env.DB_NAME,      // database name
-  process.env.DB_USER,      // username
-  process.env.DB_PASS,      // password
+  process.env.PGDATABASE,   // database name
+  process.env.PGUSER,       // username
+  process.env.PGPASSWORD,   // password
   {
-    host: process.env.DB_HOST,
-    port: process.env.PORT || 3306, // default MySQL port
-    dialect: 'mysql',
+    host: process.env.PGHOST,
+    port: process.env.PGPORT || 5432, // default PostgreSQL port
+    dialect: 'postgres',
     logging: process.env.NODE_ENV === 'development' ? console.log : false,
     define: {
       timestamps: true,
@@ -21,7 +21,7 @@ const sequelize = new Sequelize(
 const testConnection = async () => {
   try {
     await sequelize.authenticate();
-    console.log('MySQL connection established successfully.');
+    console.log('PostgreSQL connection established successfully.');
   } catch (error) {
     console.error('Unable to connect to the database:', error.message);
     process.exit(1);
