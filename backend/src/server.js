@@ -32,7 +32,7 @@ const dirs = [
   './models'
 ];
 dirs.forEach(dir => {
-  const dirPath = path.join(__dirname, '..', dir);
+  const dirPath = path.isAbsolute(dir) ? dir : path.join(__dirname, '..', dir);
   if (!fs.existsSync(dirPath)) {
     fs.mkdirSync(dirPath, { recursive: true });
   }
@@ -42,8 +42,9 @@ dirs.forEach(dir => {
 app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
 
 // CORS configuration
+const allowedOrigins = process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(',') : ['http://localhost:5173'];
 app.use(cors({
-  origin: process.env.CORS_ORIGIN || 'http://localhost:5173',
+  origin: allowedOrigins,
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
