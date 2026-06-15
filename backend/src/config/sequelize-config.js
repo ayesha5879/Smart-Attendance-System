@@ -2,30 +2,30 @@ require('dotenv').config();
 
 module.exports = {
   development: {
-    username: process.env.DB_USER || 'root',
-    password: process.env.DB_PASSWORD || 'root',
-    database: process.env.DB_NAME || 'face_attendance_db',
-    host: process.env.DB_HOST || 'localhost',
-    port: process.env.DB_PORT || 3306,
-    dialect: 'mysql',
+    username: process.env.PGUSER || 'postgres',
+    password: process.env.PGPASSWORD || null,
+    database: process.env.PGDATABASE || 'attendance_dev',
+    host: process.env.PGHOST || '127.0.0.1',
+    port: process.env.PGPORT || 5432,
+    dialect: 'postgres',
     logging: true
   },
   test: {
-    username: process.env.DB_USER || 'root',
-    password: process.env.DB_PASSWORD || 'root',
-    database: process.env.DB_NAME || 'face_attendance_db_test',
-    host: process.env.DB_HOST || 'localhost',
-    port: process.env.DB_PORT || 3306,
-    dialect: 'mysql',
+    username: process.env.PGUSER || 'postgres',
+    password: process.env.PGPASSWORD || null,
+    database: process.env.PGDATABASE || 'attendance_test',
+    host: process.env.PGHOST || '127.0.0.1',
+    port: process.env.PGPORT || 5432,
+    dialect: 'postgres',
     logging: false
   },
   production: {
-    username: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME,
-    host: process.env.DB_HOST,
-    port: process.env.DB_PORT || 3306,
-    dialect: 'mysql',
+    username: process.env.PGUSER,
+    password: process.env.PGPASSWORD,
+    database: process.env.PGDATABASE,
+    host: process.env.PGHOST,
+    port: process.env.PGPORT || 5432,
+    dialect: 'postgres',
     logging: false,
     pool: {
       max: 10,
