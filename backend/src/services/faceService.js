@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const sharp = require('sharp');
+const https = require('https');
 
 /**
  * Simplified face recognition service.
@@ -14,6 +15,25 @@ const sharp = require('sharp');
 const MODEL_URL = path.join(__dirname, '../../models');
 
 let modelsLoaded = false;
+
+// Helper to download face-api model weights dynamically if not present
+const downloadFile = (url, dest) => {
+  return new Promise((resolve, reject) => {
+    const file = fs.createWriteStream(dest);
+    https.get(url, (response) => {
+      if (response.statusCode !== 200) {
+        reject(new Error(`Failed to download ${url}: ${response.statusCode} ${response.statusMessage}`));
+        return;
+      }
+      response.pipe(file);
+      file.on('finish', () => {
+        file.close(resolve);
+      });
+    }).on('error', (err) => {
+      fs.unlink(dest, () => reject(err));
+    });
+  });
+};
 
 const loadModels = async () => {
   if (modelsLoaded) return true;
@@ -31,6 +51,26 @@ const loadModels = async () => {
     if (!fs.existsSync(modelPath)) {
       fs.mkdirSync(modelPath, { recursive: true });
     }
+
+    // Check if models exist, if not, download them
+    const modelsToDownload = [
+      'ssd_mobilenet_v1_model-weights_manifest.json',
+      'ssd_mobilenet_v1_model-shard1',
+      'face_landmark_68_model-weights_manifest.json',
+      'face_landmark_68_model-shard1',
+      'face_recognition_model-weights_manifest.json',
+      'face_recognition_model-shard1'
+    ];
+    
+    const baseUrl = 'https://raw.githubusercontent.com/justadudewhohacks/face-api.js/master/weights/';
+    
+    for (const modelFile of modelsToDownload) {
+      const destPath = path.join(modelPath, modelFile);
+      if (!fs.existsSync(destPath)) {
+        console.log(`Downloading face model weight: ${modelFile}...`);
+        await downloadFile(baseUrl + modelFile, destPath);
+      }
+    }
     
     await faceapi.nets.ssdMobilenetv1.loadFromDisk(modelPath);
     await faceapi.nets.faceLandmark68Net.loadFromDisk(modelPath);
@@ -40,7 +80,8 @@ const loadModels = async () => {
     console.log('Face recognition models loaded successfully');
     return true;
   } catch (err) {
-    console.warn('face-api.js not available. Using fallback face recognition.');
+    console.warn('face-api.js not available or failed to load. Using fallback face recognition.');
+    console.warn('Error detail:', err.message);
     console.warn('Install with: npm install face-api.js canvas');
     return false;
   }

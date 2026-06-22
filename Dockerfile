@@ -1,18 +1,18 @@
-# Use Node.js 18 on Alpine Linux
-FROM node:18-alpine
+# Use Node.js 18 on Debian Slim
+FROM node:18-slim
 
-# Install system dependencies first (needed for canvas, sharp, face-api.js)
-RUN apk add --no-cache \
-    build-base \
-    g++ \
-    cairo-dev \
-    jpeg-dev \
-    pango-dev \
-    giflib-dev \
+# Install system dependencies needed for canvas and sharp runtime
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    libcairo2-dev \
+    libjpeg-dev \
+    libpango1.0-dev \
+    libgif-dev \
+    librsvg2-dev \
     python3 \
-    py3-setuptools \
     make \
-    gcc
+    g++ \
+    && rm -rf /var/lib/apt/lists/*
 
 # Set working directory inside container
 WORKDIR /app
