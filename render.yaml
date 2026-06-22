@@ -13,9 +13,7 @@ services:
       - key: NODE_ENV
         value: production
       - key: DATABASE_URL
-        fromDatabase:
-          name: smart-attendance-db
-          property: connectionString
+        value: postgresql://neondb_owner:npg_UJpXLxjzAu79@ep-royal-pine-ad7m5wq4-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require
       - key: JWT_SECRET
         generateValue: true
       - key: UPLOAD_PATH
@@ -37,7 +35,3 @@ services:
     envVars:
       - key: VITE_API_URL
         value: https://smart-attendance-backend.onrender.com
-
-databases:
-  - name: smart-attendance-db
-    plan: free
