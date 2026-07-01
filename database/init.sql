@@ -1,4 +1,7 @@
--- Face Recognition Attendance Management System Database Schema
+cd ../frontend
+npm install
+# optional: set VITE_API_URL in frontend/.env (default is http://localhost:5000/api)
+npm run dev-- Face Recognition Attendance Management System Database Schema
 -- MySQL Database Initialization Script
 
 CREATE DATABASE IF NOT EXISTS face_attendance_db;
